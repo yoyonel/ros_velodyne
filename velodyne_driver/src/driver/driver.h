@@ -48,7 +48,6 @@ private:
 
   boost::shared_ptr<Input> input_;
   ros::Publisher output_;
-  ros::Publisher output_status_;
 
   /** diagnostics updater */
   diagnostic_updater::Updater diagnostics_;
@@ -57,6 +56,9 @@ private:
   boost::shared_ptr<diagnostic_updater::TopicDiagnostic> diag_topic_;
 
   bool using_input_socket_;
+  // -------------------------------------------------------------------------------
+//  ros::Publisher output_status_;
+  // -------------------------------------------------------------------------------
 };
 
 } // namespace velodyne_driver
