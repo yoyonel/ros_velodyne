@@ -1,4 +1,5 @@
 # build the driver node
+find_package(Boost COMPONENTS process)
 add_executable(velodyne_node velodyne_node.cc driver.cc)
 target_link_libraries(velodyne_node
   velodyne_input

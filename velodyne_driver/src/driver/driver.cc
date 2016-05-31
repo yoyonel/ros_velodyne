@@ -17,8 +17,10 @@
 
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
+//
 #include <velodyne_msgs/VelodyneScan.h>
-
+#include <velodyne_msgs/VelodyneStatus.h>
+//
 #include "driver.h"
 
 namespace velodyne_driver
@@ -96,7 +98,8 @@ VelodyneDriver::VelodyneDriver(ros::NodeHandle node,
                                         TimeStampStatusParam()));
 
   // open Velodyne input device or file
-  if (dump_file != "")
+  using_input_socket_ = dump_file == "";
+  if (!using_input_socket_)
     {
       input_.reset(new velodyne_driver::InputPCAP(private_nh,
                                                   packet_rate,
@@ -115,6 +118,21 @@ VelodyneDriver::VelodyneDriver(ros::NodeHandle node,
 
   // raw data output topic
   output_ = node.advertise<velodyne_msgs::VelodyneScan>("velodyne_packets", 10);
+  //
+  output_status_ = node.advertise<velodyne_msgs::VelodyneStatus>("velodyne_status", 10);
+}
+
+std::string exec(const char* cmd) {
+  FILE* pipe = popen(cmd, "r");
+  if (!pipe) return "ERROR";
+  char buffer[128];
+  std::string result = "";
+  while(!feof(pipe)) {
+      if(fgets(buffer, 128, pipe) != NULL)
+        result += buffer;
+    }
+  pclose(pipe);
+  return result;
 }
 
 /** poll the device
@@ -145,6 +163,24 @@ bool VelodyneDriver::poll(void)
   scan->header.stamp = ros::Time(scan->packets[config_.npackets - 1].stamp);
   scan->header.frame_id = config_.frame_id;
   output_.publish(scan);
+
+  //
+  if (using_input_socket_)
+    {
+      //
+      velodyne_msgs::VelodyneStatusPtr status(new velodyne_msgs::VelodyneStatus);
+      //
+      status->gps_position = "";
+      status->motor_state = true;
+      status->motor_rpm = 600;
+      status->laser_state = true;
+//      std::string cmd = "timeout 0.03s curl -s http://192.168.1.201/cgi/status.json";
+//      std::string res = exec(cmd.c_str());
+//      status->gps_position = res;
+      // publish message
+      ROS_DEBUG("Publishing Velodyne status.");
+      output_status_.publish(status);
+    }
 
   // notify diagnostics that a message has been published, updating
   // its status
