@@ -1,6 +1,6 @@
 <package>
 
-  <name>velodyne_status_msgs</name>
+  <name>velodyne_status</name>
   <version>1.2.0</version>
   <description>
     ROS message definitions for Velodyne 3D LIDARs.
