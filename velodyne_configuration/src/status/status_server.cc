@@ -1,8 +1,8 @@
 //
 #include <ros/ros.h>
-#include "velodyne_status_msgs/ServiceVelodyneStatus.h"
-//#include <dynamic_reconfigure/server.h>
-//#include "velodyne_status_msgs/VelodyneStatusConfig.h"
+//
+#include "velodyne_configuration/VLP16_StatusService.h"
+#include <velodyne_tools.h>
 //
 #include <string>
 //
@@ -15,38 +15,25 @@ const std::string str_IP_ADRESS_WEBSERVER_LIDAR = "192.168.1.201";
 const float max_delay_for_cmd = 0.03f;
 
 /**
- * @brief exec
- * @param cmd
- * @return
- */
-std::string exec(const char* cmd) {
-    FILE* pipe = popen(cmd, "r");
-    if (!pipe) return "ERROR";
-    char buffer[128];
-    std::string result = "";
-    while(!feof(pipe)) {
-        if(fgets(buffer, 128, pipe) != NULL)
-            result += buffer;
-    }
-    pclose(pipe);
-    return result;
-}
-
-/**
  * @brief get_status
  * @param req
  * @param res
  * @return
  */
-bool get_status(velodyne_status_msgs::ServiceVelodyneStatusRequest &req,
-                velodyne_status_msgs::ServiceVelodyneStatusResponse &res)
+bool get_status(velodyne_configuration::VLP16_StatusServiceRequest  &req,
+                velodyne_configuration::VLP16_StatusServiceResponse &res)
 {
-    // url: http://fr.cppreference.com/w/cpp/string/basic_string/to_string
-    std::string cmd_control_timing = "timeout " + std::to_string(max_delay_for_cmd) + "s ";
-    std::string cmd_curl = "curl -s http://" + str_IP_ADRESS_WEBSERVER_LIDAR + "/cgi/status.json";
-    std::string cmd = cmd_control_timing + cmd_curl;
-    std::string str_exec_res = exec(cmd.c_str());
+    const std::string str_exec_res = velodyne_tools::request_webserver(
+                str_IP_ADRESS_WEBSERVER_LIDAR,
+                velodyne_tools::WebServerCommands::status,
+                max_delay_for_cmd
+                );
+    //
+    ROS_INFO_STREAM("response from VLP webserver: " << str_exec_res);
 
+    // ------------------------------------
+    // Manual JSON file parsing
+    // ------------------------------------
     // urls:
     // - http://zenol.fr/blog/boost-property-tree/en.html
     // - https://gist.github.com/mloskot/1509935
@@ -88,21 +75,12 @@ bool get_status(velodyne_status_msgs::ServiceVelodyneStatusRequest &req,
     }
     catch (std::exception const& e)
     {
-        //      ROS_ERROR(e.what());
-        std::cerr << e.what() << std::endl;
+        ROS_ERROR_STREAM(e.what());
     }
+    // ------------------------------------
 
     return true;
 }
-
-///**
-// * @brief callback
-// * @param config
-// * @param level
-// */
-//void callback(velodyne_status_server::VelodyneStatusConfig &config, uint32_t level) {
-//    ROS_INFO("Reconfigure Request: %s", config.str_net_addr.c_str());
-//}
 
 
 int main(int argc, char **argv)
@@ -110,13 +88,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "velodyne_status_server");
     ros::NodeHandle n("~");
 
-//    dynamic_reconfigure::Server<velodyne_status_server::VelodyneStatusConfig> server;
-//    dynamic_reconfigure::Server<velodyne_status_server::VelodyneStatusConfig>::CallbackType f;
-
-//    f = boost::bind(&callback, _1, _2);
-//    server.setCallback(f);
-
-    ros::ServiceServer service = n.advertiseService("velodyne_status", get_status);
+    ros::ServiceServer service = n.advertiseService("get_status", get_status);
     ROS_INFO("Ready to get velodyne status.");
     ros::spin();
 
