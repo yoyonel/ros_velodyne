@@ -1,8 +1,8 @@
 //
 #include <ros/ros.h>
-#include <dynamic_reconfigure/server.h>
 #include "velodyne_status_msgs/ServiceVelodyneStatus.h"
-#include "velodyne_status_msgs/VelodyneStatusConfig.h"
+//#include <dynamic_reconfigure/server.h>
+//#include "velodyne_status_msgs/VelodyneStatusConfig.h"
 //
 #include <string>
 //
@@ -95,14 +95,14 @@ bool get_status(velodyne_status_msgs::ServiceVelodyneStatusRequest &req,
     return true;
 }
 
-/**
- * @brief callback
- * @param config
- * @param level
- */
-void callback(velodyne_status_server::VelodyneStatusConfig &config, uint32_t level) {
-    ROS_INFO("Reconfigure Request: %s", config.str_net_addr.c_str());
-}
+///**
+// * @brief callback
+// * @param config
+// * @param level
+// */
+//void callback(velodyne_status_server::VelodyneStatusConfig &config, uint32_t level) {
+//    ROS_INFO("Reconfigure Request: %s", config.str_net_addr.c_str());
+//}
 
 
 int main(int argc, char **argv)
@@ -110,11 +110,11 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "velodyne_status_server");
     ros::NodeHandle n("~");
 
-    dynamic_reconfigure::Server<velodyne_status_server::VelodyneStatusConfig> server;
-    dynamic_reconfigure::Server<velodyne_status_server::VelodyneStatusConfig>::CallbackType f;
+//    dynamic_reconfigure::Server<velodyne_status_server::VelodyneStatusConfig> server;
+//    dynamic_reconfigure::Server<velodyne_status_server::VelodyneStatusConfig>::CallbackType f;
 
-    f = boost::bind(&callback, _1, _2);
-    server.setCallback(f);
+//    f = boost::bind(&callback, _1, _2);
+//    server.setCallback(f);
 
     ros::ServiceServer service = n.advertiseService("velodyne_status", get_status);
     ROS_INFO("Ready to get velodyne status.");

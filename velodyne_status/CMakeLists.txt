@@ -5,8 +5,8 @@ project(velodyne_status)
 set(${PROJECT_NAME}_CATKIN_DEPS
     roscpp
     message_generation
-    std_msgs
-    dynamic_reconfigure)
+    std_msgs)
+    # dynamic_reconfigure)
 
 
 find_package(catkin REQUIRED COMPONENTS ${${PROJECT_NAME}_CATKIN_DEPS})
@@ -23,9 +23,9 @@ add_service_files(
   ServiceVelodyneStatus.srv
 )
 
-generate_dynamic_reconfigure_options(
-  cfg/VelodyneStatus.cfg
-)
+# generate_dynamic_reconfigure_options(
+#   cfg/VelodyneStatus.cfg
+# )
 
 generate_messages(DEPENDENCIES std_msgs)
 
