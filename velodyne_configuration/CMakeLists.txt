@@ -17,12 +17,14 @@ add_message_files(
   DIRECTORY msg
   FILES
   VLP16_StatusMessage.msg
+  VLP16_SettingsMessage.msg
 )
 
 add_service_files(
   DIRECTORY srv
   FILES
   VLP16_StatusService.srv
+  VLP16_SettingsService.srv
 )
 
 # ROS Dynamic Reconfigure Parameter
@@ -46,6 +48,7 @@ add_subdirectory(src/lib)
 add_executable(velodyne_settings_server
     src/settings/settings_server.cc)
 target_link_libraries(velodyne_settings_server
+    velodyne_tools
     ${catkin_LIBRARIES})
 add_dependencies(velodyne_settings_server ${catkin_EXPORTED_TARGETS})
 
@@ -57,7 +60,7 @@ install(TARGETS velodyne_settings_server
 ##############################
 
 ##############################
-## Velodyne settings server ##
+## Velodyne status server   ##
 ##############################
 #add_std_cxx11_flag("src/status/status_server.cc")
 

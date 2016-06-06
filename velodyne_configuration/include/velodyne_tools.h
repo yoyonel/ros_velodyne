@@ -10,6 +10,9 @@ namespace velodyne_tools
 
 namespace pt = boost::property_tree;
 
+const std::string str_IP_ADRESS_WEBSERVER_LIDAR = "192.168.1.201";
+const float max_delay_for_cmd = 0.03f;
+
 // -------------------------------------------
 // url: http://stackoverflow.com/a/13188585
 // -------------------------------------------
@@ -39,6 +42,35 @@ std::string request_webserver(
         WebServerCommands _cmd,
         const float& _max_delay_for_cmd = 0
         );
+
+// url: http://www.alexonlinux.com/gcc-macro-language-extensions
+#define JSON_INIT(_root, _input)                                \
+    std::stringstream _input ## _stream;                        \
+    _input ## _stream << _input;                                \
+    pt::ptree _root;                                            \
+    boost::property_tree::read_json(_input ## _stream, _root);
+
+#define JSON_READ(_json_root, _json_child, _ros_res, _ros_msg_child, _type)   \
+    _ros_res.msg._ros_msg_child = _json_root.get < _type > ( #_json_child )
+
+#define JSON_READ_STRING(_json_root, _json_child, _ros_res, _ros_msg_child)   \
+    JSON_READ(_json_root, _json_child, _ros_res, _ros_msg_child, std::string)
+
+#define JSON_READ_UINT16(_json_root, _json_child, _ros_res, _ros_msg_child)   \
+    JSON_READ(_json_root, _json_child, _ros_res, _ros_msg_child, uint16_t)
+
+#define JSON_READ_UINT8(_json_root, _json_child, _ros_res, _ros_msg_child)   \
+    JSON_READ(_json_root, _json_child, _ros_res, _ros_msg_child, uint8_t)
+
+#define JSON_READ_BOOL(_json_root, _json_child, _ros_res, _ros_msg_child)   \
+    JSON_READ_STRING(_json_root, _json_child, _ros_res, _ros_msg_child) == "On"
+
+#define JSON_READ_STATE(_json_root, _json_child, _ros_res, _ros_msg_child)   \
+    JSON_READ_STRING(_json_root, _json_child, _ros_res, _ros_msg_child) == "Enabled"
+
+#define JSON_READ_STRING(_json_root, _json_child, _ros_res, _ros_msg_child)   \
+    JSON_READ(_json_root, _json_child, _ros_res, _ros_msg_child, std::string)
+
 
 } // namespace velodyne_settings
 
