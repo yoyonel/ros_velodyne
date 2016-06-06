@@ -38,20 +38,20 @@ bool get_settings(velodyne_configuration::VLP16_SettingsServiceRequest  &req,
    {
        JSON_INIT(root, str_exec_res);
 
-       JSON_READ_BOOL(      root, laser,    res, laser_state);
-       JSON_READ_STRING(    root, returns,  res, returns);
-       JSON_READ_UINT16(    root, rpm,      res, rpm);
-       JSON_READ_UINT16(    root, fov.start,res, fov_start);
-       JSON_READ_UINT16(    root, fov.end,  res, fov_end);
-       JSON_READ_STATE(     root, phaselock.enabled,    res, phaselock_enabled);
-       JSON_READ_UINT16(    root, phaselock.offset,     res, phaselock_offset);
-       JSON_READ_STRING(    root, host.addr,            res, host_addr);
-       JSON_READ_UINT16(    root, host.dport,           res, host_dport);
-       JSON_READ_UINT16(    root, host.tport,           res, host_tport);
-       JSON_READ_STRING(    root, net.addr,             res, net_addr);
-       JSON_READ_STRING(    root, net.mask,             res, net_mask);
-       JSON_READ_STRING(    root, net.gateway,          res, net_gateway);
-       JSON_READ_BOOL(      root, net.dhcp,             res, net_dhcp);
+       JSON_READ_BOOL   (root, laser,                res, laser_state);
+       JSON_READ_STRING (root, returns,              res, returns);
+       JSON_READ_UINT16 (root, rpm,                  res, rpm);
+       JSON_READ_UINT16 (root, fov.start,            res, fov_start);
+       JSON_READ_UINT16 (root, fov.end,              res, fov_end);
+       JSON_READ_STATE  (root, phaselock.enabled,    res, phaselock_enabled);
+       JSON_READ_UINT16 (root, phaselock.offset,     res, phaselock_offset);
+       JSON_READ_STRING (root, host.addr,            res, host_addr);
+       JSON_READ_UINT16 (root, host.dport,           res, host_dport);
+       JSON_READ_UINT16 (root, host.tport,           res, host_tport);
+       JSON_READ_STRING (root, net.addr,             res, net_addr);
+       JSON_READ_STRING (root, net.mask,             res, net_mask);
+       JSON_READ_STRING (root, net.gateway,          res, net_gateway);
+       JSON_READ_BOOL   (root, net.dhcp,             res, net_dhcp);
 
    }
    catch (std::exception const& e)

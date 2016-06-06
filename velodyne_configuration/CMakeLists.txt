@@ -17,6 +17,10 @@ add_message_files(
   DIRECTORY msg
   FILES
   VLP16_StatusMessage.msg
+  #
+  VLP16_DiagnosticsRawMessage.msg
+  VLP16_DiagnosticsMessage.msg
+  #
   VLP16_SettingsMessage.msg
 )
 
@@ -24,6 +28,10 @@ add_service_files(
   DIRECTORY srv
   FILES
   VLP16_StatusService.srv
+  #
+  VLP16_DiagnosticsService.srv
+  VLP16_DiagnosticsRawService.srv
+  #
   VLP16_SettingsService.srv
 )
 
@@ -73,6 +81,25 @@ add_dependencies(velodyne_status_server ${catkin_EXPORTED_TARGETS})
 
 # install runtime files
 install(TARGETS velodyne_status_server
+     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+     COMPONENT main
+)
+##############################
+
+
+###################################
+## Velodyne diagnostics server   ##
+###################################
+
+add_executable(velodyne_diagnostics_server
+    src/diagnostics/diagnostics_server.cc)
+target_link_libraries(velodyne_diagnostics_server
+    velodyne_tools
+    ${catkin_LIBRARIES})
+add_dependencies(velodyne_diagnostics_server ${catkin_EXPORTED_TARGETS})
+
+# install runtime files
+install(TARGETS velodyne_diagnostics_server
      RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
      COMPONENT main
 )
