@@ -8,7 +8,7 @@
 #include <velodyne_tools.h>
 
 
-namespace pt = boost::property_tree;
+velodyne_tools::VLP16_WebServer webserver;
 
 
 /**
@@ -18,49 +18,12 @@ namespace pt = boost::property_tree;
  * @return
  */
 bool get_settings(velodyne_configuration::VLP16_SettingsServiceRequest  &req,
-               velodyne_configuration::VLP16_SettingsServiceResponse &res)
+                  velodyne_configuration::VLP16_SettingsServiceResponse &res)
 {
-   const std::string str_exec_res = velodyne_tools::request_webserver(
-               velodyne_tools::str_IP_ADRESS_WEBSERVER_LIDAR,
-               velodyne_tools::WebServerCommands::settings,
-               velodyne_tools::max_delay_for_cmd
-               );
-   //
-   ROS_INFO_STREAM("response from VLP webserver: " << str_exec_res);
+    const std::string res_request = webserver.request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::settings);
+    ROS_INFO_STREAM("response from VLP webserver: " << res_request );
 
-   // ------------------------------------
-   // Manual JSON file parsing
-   // ------------------------------------
-   // urls:
-   // - http://zenol.fr/blog/boost-property-tree/en.html
-   // - https://gist.github.com/mloskot/1509935
-   try
-   {
-       JSON_INIT(root, str_exec_res);
-
-       JSON_READ_BOOL   (root, laser,                res, laser_state);
-       JSON_READ_STRING (root, returns,              res, returns);
-       JSON_READ_UINT16 (root, rpm,                  res, rpm);
-       JSON_READ_UINT16 (root, fov.start,            res, fov_start);
-       JSON_READ_UINT16 (root, fov.end,              res, fov_end);
-       JSON_READ_STATE  (root, phaselock.enabled,    res, phaselock_enabled);
-       JSON_READ_UINT16 (root, phaselock.offset,     res, phaselock_offset);
-       JSON_READ_STRING (root, host.addr,            res, host_addr);
-       JSON_READ_UINT16 (root, host.dport,           res, host_dport);
-       JSON_READ_UINT16 (root, host.tport,           res, host_tport);
-       JSON_READ_STRING (root, net.addr,             res, net_addr);
-       JSON_READ_STRING (root, net.mask,             res, net_mask);
-       JSON_READ_STRING (root, net.gateway,          res, net_gateway);
-       JSON_READ_BOOL   (root, net.dhcp,             res, net_dhcp);
-
-   }
-   catch (std::exception const& e)
-   {
-       ROS_ERROR_STREAM(e.what());
-   }
-   // ------------------------------------
-
-   return true;
+    return webserver.parse_JSON_for_settings(res_request, res);
 }
 
 // * @brief callback
@@ -74,7 +37,10 @@ void callback(velodyne_configuration::VLP16_settingsConfig &config, uint32_t lev
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "velodyne_settings_server");
-    ros::NodeHandle n("~");
+
+    ros::NodeHandle ros_node("~");
+
+    webserver.get_ip(ros_node);
 
     dynamic_reconfigure::Server<velodyne_configuration::VLP16_settingsConfig> server;
     dynamic_reconfigure::Server<velodyne_configuration::VLP16_settingsConfig>::CallbackType f;
@@ -84,7 +50,7 @@ int main(int argc, char **argv)
     //
     ROS_INFO("Ready to set velodyne settings.");
 
-    ros::ServiceServer service = n.advertiseService("get_settings", get_settings);
+    ros::ServiceServer service = ros_node.advertiseService("get_settings", get_settings);
     //
     ROS_INFO("Ready to get velodyne settings.");
 

@@ -70,7 +70,7 @@ install(TARGETS velodyne_settings_server
 ##############################
 ## Velodyne status server   ##
 ##############################
-#add_std_cxx11_flag("src/status/status_server.cc")
+add_std_cxx11_flag("src/status/status_server.cc")
 
 add_executable(velodyne_status_server
     src/status/status_server.cc)
@@ -90,7 +90,6 @@ install(TARGETS velodyne_status_server
 ###################################
 ## Velodyne diagnostics server   ##
 ###################################
-
 add_executable(velodyne_diagnostics_server
     src/diagnostics/diagnostics_server.cc)
 target_link_libraries(velodyne_diagnostics_server

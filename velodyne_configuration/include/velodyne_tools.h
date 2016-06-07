@@ -5,43 +5,92 @@
 #include <boost/property_tree/json_parser.hpp>
 #include "enum.h"
 
-namespace velodyne_tools
-{
+#include <ros/ros.h>
+
+#include "velodyne_configuration/VLP16_SettingsService.h"
+#include "velodyne_configuration/VLP16_StatusService.h"
+#include "velodyne_configuration/VLP16_DiagnosticsService.h"
+#include "velodyne_configuration/VLP16_DiagnosticsRawService.h"
 
 namespace pt = boost::property_tree;
 
-const std::string str_IP_ADRESS_WEBSERVER_LIDAR = "192.168.1.201";
-const float max_delay_for_cmd = 0.03f;
+
+namespace velodyne_tools
+{
 
 // -------------------------------------------
 // url: http://stackoverflow.com/a/13188585
 // -------------------------------------------
-//#define stringify( name ) # name
+#define stringify( name ) # name
 
-//enum WebServerCommands {
-//    settings,
-//    status,
-//    info,
-//    diag
-//};
-// -------------------------------------------
-
-// url: http://aantron.github.io/better-enums/
-// usage: https://raw.githubusercontent.com/aantron/better-enums/master/doc/image/sample.gif
-BETTER_ENUM( WebServerCommands, char,
+BETTER_ENUM( _WebServerCommands, char,
              settings=1,
              status,
              info,
              diag
              )
 
-std::string exec_cmd(const char* cmd);
+#define hdltop_volts_to_hv(volts)   \
+    101.0 * (volts - 5.0)
 
-std::string request_webserver(
-        std::string _ip_laser,
-        WebServerCommands _cmd,
-        const float& _max_delay_for_cmd = 0
-        );
+#define lm20_volts_to_degCel(volts) \
+    -1481.96 + sqrt(2.1962E6 + (1.8639 - volts)/3.88E-6)
+
+#define acs17_volts_to_amps(volts)  \
+    10.0 * (volts - 2.5);
+
+
+class Velodyne_WebServer
+{
+    public:
+    //    enum WebServerCommands {
+    //        settings,
+    //        status,
+    //        info,
+    //        diag
+    //    };
+    // -------------------------------------------
+
+    // url: http://aantron.github.io/better-enums/
+    // usage: https://raw.githubusercontent.com/aantron/better-enums/master/doc/image/sample.gif
+    typedef _WebServerCommands WebServerCommands;
+
+
+    public:
+    inline void set_network_sensor_ip(const std::string &_addr) { m_network_sensor_ip = _addr; }
+
+    virtual std::string request_webserver(const WebServerCommands &_cmd) const = 0;
+
+    protected:
+    std::string exec_cmd(const char* cmd) const;
+
+
+    protected:
+    std::string m_network_sensor_ip;
+    float m_max_delay_for_cmd;
+};
+
+class VLP16_WebServer: Velodyne_WebServer
+{
+public:
+    // url: http://stackoverflow.com/questions/2290733/initialize-parents-protected-members-with-initialization-list-c
+    VLP16_WebServer()
+    {
+        m_network_sensor_ip = "192.168.1.201";
+        m_max_delay_for_cmd = 0.03f;
+    }
+
+    std::string request_webserver(const WebServerCommands &_cmd) const;
+
+    bool get_ip(const ros::NodeHandle &_n, const std::string &_param_name="VLP16_NETWORK_SENSOR_IP");
+
+    //
+    bool parse_JSON_for_settings(const std::string &res_request, velodyne_configuration::VLP16_SettingsServiceResponse &res);
+    bool parse_JSON_for_status(const std::string &res_request, velodyne_configuration::VLP16_StatusServiceResponse &res);
+    bool parse_JSON_for_diagnostics_raw(const std::string &res_request, velodyne_configuration::VLP16_DiagnosticsRawServiceResponse &res);
+
+    bool scale_volt_temp(velodyne_configuration::VLP16_DiagnosticsRawMessage &_msg_raw,velodyne_configuration::VLP16_DiagnosticsMessage &_msg);
+};
 
 // url: http://www.alexonlinux.com/gcc-macro-language-extensions
 #define JSON_INIT(_root, _input)                                \
@@ -71,7 +120,6 @@ std::string request_webserver(
 #define JSON_READ_STRING(_json_root, _json_child, _ros_res, _ros_msg_child)   \
     JSON_READ(_json_root, _json_child, _ros_res, _ros_msg_child, std::string)
 
-
-} // namespace velodyne_settings
+} // namespace velodyne_tools
 
 #endif
