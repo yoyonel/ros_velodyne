@@ -11,6 +11,7 @@
 #include "velodyne_configuration/VLP16_StatusService.h"
 #include "velodyne_configuration/VLP16_DiagnosticsService.h"
 #include "velodyne_configuration/VLP16_DiagnosticsRawService.h"
+#include "velodyne_configuration/VLP16_settingsConfig.h"
 
 namespace pt = boost::property_tree;
 
@@ -29,6 +30,12 @@ BETTER_ENUM( _WebServerCommands, char,
              info,
              diag
              )
+
+BETTER_ENUM( _LaserReturns, char,
+             Strongest=0,
+             Last,
+             Dual
+        )
 
 #define hdltop_volts_to_hv(volts)   \
     101.0 * (volts - 5.0)
@@ -54,6 +61,7 @@ class Velodyne_WebServer
     // url: http://aantron.github.io/better-enums/
     // usage: https://raw.githubusercontent.com/aantron/better-enums/master/doc/image/sample.gif
     typedef _WebServerCommands WebServerCommands;
+    typedef _LaserReturns LaserReturns;
 
 
     public:
@@ -81,6 +89,8 @@ public:
     }
 
     std::string request_webserver(const WebServerCommands &_cmd) const;
+    int send_settings_to_webserver(const velodyne_configuration::VLP16_settingsConfig& _config) const;
+    std::string convert_config_to_xwwwformcoded(const velodyne_configuration::VLP16_settingsConfig& _config) const;
 
     bool get_ip(const ros::NodeHandle &_n, const std::string &_param_name="VLP16_NETWORK_SENSOR_IP");
 

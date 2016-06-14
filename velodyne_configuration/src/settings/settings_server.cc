@@ -31,7 +31,8 @@ bool get_settings(velodyne_configuration::VLP16_SettingsServiceRequest  &req,
 // * @param level
 // */
 void callback(velodyne_configuration::VLP16_settingsConfig &config, uint32_t level) {
-    ROS_INFO("Reconfigure Request: %s", config.net_addr.c_str());
+    const int return_set_configs = webserver.send_settings_to_webserver(config);
+    ROS_INFO("Reconfigure Request: %d", return_set_configs);
 }
 
 int main(int argc, char **argv)
@@ -42,6 +43,10 @@ int main(int argc, char **argv)
 
     webserver.get_ip(ros_node);
 
+
+    //----------------------------------------------------
+    // Dynamic Parameter server
+    //----------------------------------------------------
     dynamic_reconfigure::Server<velodyne_configuration::VLP16_settingsConfig> server;
     dynamic_reconfigure::Server<velodyne_configuration::VLP16_settingsConfig>::CallbackType f;
 
@@ -49,10 +54,16 @@ int main(int argc, char **argv)
     server.setCallback(f);
     //
     ROS_INFO("Ready to set velodyne settings.");
+    //----------------------------------------------------
 
+
+    //----------------------------------------------------
+    // Services
+    //----------------------------------------------------
     ros::ServiceServer service = ros_node.advertiseService("get_settings", get_settings);
     //
     ROS_INFO("Ready to get velodyne settings.");
+    //----------------------------------------------------
 
     ros::spin();
 

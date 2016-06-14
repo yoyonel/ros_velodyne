@@ -36,17 +36,84 @@ std::string Velodyne_WebServer::exec_cmd(const char* cmd) const
 std::string VLP16_WebServer::request_webserver(const WebServerCommands& _cmd) const
 {
     // url: http://stackoverflow.com/questions/23936246/error-invalid-operands-of-types-const-char-35-and-const-char-2-to-binar
-    std::string cmd_curl = "curl -s http://" + m_network_sensor_ip + "/cgi/" + _cmd._to_string() + ".json";
+    const std::string cmd_curl =                    \
+            "curl -s http://" +                     \
+            m_network_sensor_ip +                   \
+            "/cgi/" + _cmd._to_string() + ".json";
 
-    std::string cmd = cmd_curl;
-    if(m_max_delay_for_cmd != 0) {
-        cmd = "timeout " + std::to_string(m_max_delay_for_cmd) + "s " + cmd;
-    }
+    const std::string cmd =
+            (m_max_delay_for_cmd != 0 ?                                     \
+                "timeout " + std::to_string(m_max_delay_for_cmd) + "s " :   \
+                "")                                                         \
+            + cmd_curl;
     //
     ROS_INFO_STREAM("Commande bash: " << cmd);
 
     return exec_cmd(cmd.c_str());
 }
+
+/**
+ * @brief VLP16_WebServer::convert_config_to_x
+ * @param _config
+ * @return
+ */
+std::string VLP16_WebServer::convert_config_to_xwwwformcoded(const velodyne_configuration::VLP16_settingsConfig& _config) const
+{
+    const std::string result = \
+            "laser=" + std::string(_config.laser_state?"on":"off") + "&" \
+            "returns=" + LaserReturns::_from_integral(_config.return_type)._to_string() + "&" \
+            "rpm=" + std::to_string(_config.rpm);
+
+    return result;
+}
+
+/**
+ * @brief VLP16_WebServer::send_settings_to_webserver
+ * @param _config
+ * @return
+ */
+int VLP16_WebServer::send_settings_to_webserver(const velodyne_configuration::VLP16_settingsConfig& _config) const
+{
+    const std::string curl_settings = convert_config_to_xwwwformcoded(_config);
+
+//     From: man curl
+//    -d, --data <data>
+//            (HTTP)  Sends  the  specified data in a POST request to the HTTP server, in the same way that a browser does when a user has filled in an HTML
+//            form and presses the submit button. This will cause curl to pass the data to the server using the  content-type  application/x-www-form-urlen?
+//                coded.  Compare to -F, --form.
+//
+//            -d,  --data  is the same as --data-ascii. To post data purely binary, you should instead use the --data-binary option. To URL-encode the value
+//            of a form field you may use --data-urlencode.
+//
+//            If any of these options is used more than once on the same command line, the data pieces specified will be merged together with  a  separating
+//            &-symbol. Thus, using '-d name=daniel -d skill=lousy' would generate a post chunk that looks like 'name=daniel&skill=lousy'.
+//
+//            If  you  start  the  data with the letter @, the rest should be a file name to read the data from, or - if you want curl to read the data from
+//            stdin. Multiple files can also be specified. Posting data from a file named 'foobar' would thus be done with --data @foobar.  When  --data  is
+//            told to read from a file like that, carriage returns and newlines will be stripped out.
+
+    const std::string cmd_curl = \
+            "curl -X POST http://" + \
+            m_network_sensor_ip + \
+            "/cgi/setting --data '" + \
+            curl_settings + \
+            "'"
+            ;
+
+    const std::string cmd =
+            (m_max_delay_for_cmd != 0 ?                                     \
+                "timeout " + std::to_string(m_max_delay_for_cmd) + "s " :   \
+                "")                                                         \
+            + cmd_curl;
+    //
+    ROS_INFO_STREAM("Commande bash: " << cmd);
+
+    const std::string ret_cmd = exec_cmd(cmd.c_str());
+
+    return 1;
+}
+
+
 
 bool VLP16_WebServer::get_ip(
         const ros::NodeHandle &_n,
