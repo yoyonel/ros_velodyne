@@ -2,7 +2,7 @@
 
 
 CVelodyneSettings::CVelodyneSettings() :
-    nh_("~"), /*bAuthSyncROStoLaser_(false),*/ server_(dynamic_reconfigure_mutex_) {
+    nh_("~"), loop_rate_value_(1), server_(dynamic_reconfigure_mutex_) {
 
     webserver_.get_ip(nh_);
 
@@ -54,8 +54,7 @@ void CVelodyneSettings::run() {
     //----------------------------------------
     // Boucle d'exécution ROS
     //----------------------------------------
-    //    ros::spin();
-    ros::Rate loop_rate(1);   // 1 Hz
+    ros::Rate loop_rate(loop_rate_value_);   // 1 Hz
     while (ros::ok())
     {
         if( get_settings(laser_settings_) ) {
@@ -84,13 +83,8 @@ bool CVelodyneSettings::get_settings(velodyne_configuration::VLP16_SettingsServi
 }
 
 void CVelodyneSettings::callback(velodyne_configuration::VLP16_settingsConfig &config, uint32_t level) {
-//    if( !bAuthSyncROStoLaser_ ) {
-//        ROS_INFO("Failed to synchronize ROS to Laser (non-authorized) !");
-//    }
-//    else {
     const int return_set_configs = webserver_.send_settings_to_webserver(config);
     ROS_INFO("Reconfigure Request: %d", return_set_configs);
-//    }
 }
 
 void CVelodyneSettings::velodyne_settingsCallback(velodyne_configuration::VLP16_SettingsMessage _msg)

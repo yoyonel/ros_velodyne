@@ -36,10 +36,11 @@ private:
     //! Private NodeHandle
     ros::NodeHandle nh_;
 
+    double loop_rate_value_;
+
     velodyne_tools::VLP16_WebServer webserver_;
 
     bool bAuthSyncROStoLaser_;
-    //boost::mutex mtxSyncROStoLaser;
 
     ros::ServiceServer service_;
 

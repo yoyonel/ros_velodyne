@@ -206,7 +206,7 @@ bool VLP16_WebServer::parse_JSON_for_status(
          - laser
          -- state
         /**/
-        JSON_READ_STATE(root, laser.state, res, laser_state);
+        JSON_READ_BOOL(root, laser.state, res, laser_state);
     }
     catch (std::exception const& e)
     {
