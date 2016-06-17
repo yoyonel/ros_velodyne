@@ -77,7 +77,7 @@ add_executable(velodyne_status_server
     src/status/status_server.cc)
 target_link_libraries(velodyne_status_server
     velodyne_tools
-    velodyne_status
+#    velodyne_status
     ${catkin_LIBRARIES})
 add_dependencies(velodyne_status_server ${catkin_EXPORTED_TARGETS})
 
@@ -96,7 +96,7 @@ add_executable(velodyne_diagnostics_server
     src/diagnostics/diagnostics_server.cc)
 target_link_libraries(velodyne_diagnostics_server
     velodyne_tools
-    velodyne_diagnostics
+#    velodyne_diagnostics
     ${catkin_LIBRARIES})
 add_dependencies(velodyne_diagnostics_server ${catkin_EXPORTED_TARGETS})
 

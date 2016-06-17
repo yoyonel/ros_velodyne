@@ -1,15 +1,19 @@
 add_std_cxx11_flag("velodyne_tools.cc")
+add_std_cxx11_flag("velodyne_diagnostics.cpp")
+add_std_cxx11_flag("../../include/velodyne_tools.h")
+
+
 add_library(velodyne_tools velodyne_tools.cc)
 target_link_libraries(velodyne_tools ${catkin_LIBRARIES})
 
 add_library(velodyne_settings velodyne_settings.cpp)
 target_link_libraries(velodyne_settings ${catkin_LIBRARIES})
 
-add_library(velodyne_status velodyne_status.cpp)
-target_link_libraries(velodyne_status ${catkin_LIBRARIES})
+#add_library(velodyne_status velodyne_status.cpp)
+#target_link_libraries(velodyne_status ${catkin_LIBRARIES})
 
-add_library(velodyne_diagnostics velodyne_diagnostics.cpp)
-target_link_libraries(velodyne_diagnostics ${catkin_LIBRARIES})
+#add_library(velodyne_diagnostics velodyne_diagnostics.cpp)
+#target_link_libraries(velodyne_diagnostics ${catkin_LIBRARIES})
 
 # ####################
 # INSTALL
@@ -24,12 +28,12 @@ install(TARGETS velodyne_settings
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
 
-install(TARGETS velodyne_status
-        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
+#install(TARGETS velodyne_status
+#        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+#        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
 
-install(TARGETS velodyne_diagnostics
-        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
+#install(TARGETS velodyne_diagnostics
+#        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+#        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})

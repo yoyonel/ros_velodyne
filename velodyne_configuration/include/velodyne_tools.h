@@ -6,6 +6,7 @@
 #include "enum.h"
 
 #include <ros/ros.h>
+#include <ros/service.h>
 
 #include "velodyne_configuration/VLP16_SettingsService.h"
 #include "velodyne_configuration/VLP16_StatusService.h"
@@ -35,7 +36,7 @@ BETTER_ENUM( _LaserReturns, char,
              Strongest=0,
              Last,
              Dual
-        )
+             )
 
 #define hdltop_volts_to_hv(volts)   \
     101.0 * (volts - 5.0)
@@ -102,6 +103,108 @@ public:
     bool scale_volt_temp(velodyne_configuration::VLP16_DiagnosticsRawMessage &_msg_raw,velodyne_configuration::VLP16_DiagnosticsMessage &_msg);
 };
 
+//---------------------------------------------------------------------------
+template<class Service, class Message>
+class Velodyne_WebServer_Services
+{
+public:
+    Velodyne_WebServer_Services(const std::string& _service_name);
+
+    // urls:
+    // - http://stackoverflow.com/questions/26267115/boost-function-instantion-with-nothing
+    // - http://www.radmangames.com/programming/how-to-use-boost-function
+    // - http://fr.cppreference.com/w/cpp/language/lambda
+    virtual void run(
+            boost::function<bool()> _prePublish=[] () { return true; },
+            boost::function<void()> _postPublish=[] () {}
+    );
+
+    virtual void run_with_test_sub(boost::function<void()> _postPublish=[] () {});
+
+    inline const std::string& get_topic_name_pub() const { return topic_name_pub_; }
+    inline const std::string& get_node_name_srv() const { return node_name_srv_; }
+
+protected:
+    virtual bool get_response(typename Service::Response& _res) = 0;
+    inline bool get_response(typename Service::Request&, typename Service::Response& _res)
+    {
+        return get_response(_res);
+    }
+
+protected:
+    ros::NodeHandle nh_;
+
+    VLP16_WebServer webserver_;
+
+    double loop_rate_value_;
+
+    ros::Publisher velodyne_service_pub_;
+    ros::ServiceServer velodyne_service_srv_;
+
+    std::string topic_name_pub_;
+    std::string node_name_srv_;
+private:
+    //! Private NodeHandle
+    typename Service::Response laser_data_;
+};
+
+//----------------------
+// Typedef sur les spécialisations de la classe template Velodyne_WebServer_Services
+// Spécialisation pour gérer les :
+// - 'Settings'
+// - 'Status'
+// - 'Diagnostics'
+typedef Velodyne_WebServer_Services<velodyne_configuration::VLP16_DiagnosticsService, velodyne_configuration::VLP16_DiagnosticsMessage> S_VWS_Diagnostics;
+typedef Velodyne_WebServer_Services<velodyne_configuration::VLP16_StatusService, velodyne_configuration::VLP16_StatusMessage> S_VWS_Status;
+typedef Velodyne_WebServer_Services<velodyne_configuration::VLP16_SettingsService, velodyne_configuration::VLP16_SettingsMessage> S_VWS_Settings;
+
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+class Velodyne_WebServer_Status : public S_VWS_Status
+{
+public:
+    Velodyne_WebServer_Status(const std::string& _name="status");
+
+    void run();
+
+protected:
+    bool get_response(velodyne_configuration::VLP16_StatusServiceResponse& _res);
+};
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+class Velodyne_WebServer_Settings : public S_VWS_Settings
+{
+public:
+    Velodyne_WebServer_Settings(const std::string& _name="settings");
+
+protected:
+    bool get_response(velodyne_configuration::VLP16_SettingsServiceResponse& _res);
+
+private:
+    ros::Subscriber velodyne_settings_sub_;
+};
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+class Velodyne_WebServer_Diagnostics : public S_VWS_Diagnostics
+{
+public:
+    Velodyne_WebServer_Diagnostics(const std::string& _name="diagnostics");
+
+    void run();
+
+protected:
+    bool get_response(velodyne_configuration::VLP16_DiagnosticsServiceResponse& _res);
+
+private:
+    bool get_diagnostics_raw(velodyne_configuration::VLP16_DiagnosticsRawServiceResponse& _res);
+};
+//---------------------------------------------------------------------------
+
+
+//---------------------------------------------------------------------------
 // url: http://www.alexonlinux.com/gcc-macro-language-extensions
 #define JSON_INIT(_root, _input)                                \
     std::stringstream _input ## _stream;                        \
@@ -129,6 +232,7 @@ public:
 
 #define JSON_READ_STRING(_json_root, _json_child, _ros_res, _ros_msg_child)   \
     JSON_READ(_json_root, _json_child, _ros_res, _ros_msg_child, std::string)
+//---------------------------------------------------------------------------
 
 } // namespace velodyne_tools
 
