@@ -10,8 +10,8 @@ int main(int argc, char **argv)
     CVelodyneSettings vs;   // instanciation de l'object (à faire) APRES ros::init !
 
     //    vs.set_loop_rate_value_(0.5);   // 0.5Hz    [OK]
-    vs.set_loop_rate_value_(10);    // 10Hz     [OK]
-    //    vs.set_loop_rate_value_(100);   // 100Hz [OK]
+    //    vs.set_loop_rate_value_(10);    // 10Hz     [OK]
+    vs.set_loop_rate_value_(100);   // 100Hz [OK]
     vs.set_max_delay_for_cmd_(0.500f);  // => 500ms de delay max
 
     vs.run();

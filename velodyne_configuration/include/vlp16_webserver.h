@@ -23,7 +23,12 @@ public:
             WebServerConnectionType _typeConnection = DEFAULT_WEBSERVER_CONNECTION_TYPE
             ) const override;
 
-    int send_settings_to_webserver(const VLP16_settingsConfig& _config) const;
+    //
+    int send_settings_to_webserver(
+            const VLP16_settingsConfig& _config,
+            WebServerConnectionType _typeConnection = DEFAULT_WEBSERVER_CONNECTION_TYPE
+            ) const;
+    //
     std::string convert_config_to_xwwwformcoded(const VLP16_settingsConfig& _config) const;
 
     bool get_ip(const ros::NodeHandle &_n, const std::string &_param_name="VLP16_NETWORK_SENSOR_IP");
@@ -42,16 +47,26 @@ public:
     bool scale_volt_temp(VLP16_DiagnosticsRawMessage &_msg_raw, VLP16_DiagnosticsMessage &_msg);
 
 protected:
+    //
     std::string request_webserver_curl(const WebServerCommands& _cmd) const;
     std::string request_webserver_asio_synch(const WebServerCommands& _cmd) const;
     std::string request_webserver_asio_asynch(const WebServerCommands& _cmd) const;
+    //
+    int send_settings_to_webserver_curl(const VLP16_settingsConfig& _config) const;
+    int send_settings_to_webserver_asio_asynch(const VLP16_settingsConfig& _config) const;
 
 private:
-    typedef boost::function<std::string(const WebServerCommands&)> fun_t;
-    const std::map<WebServerConnectionType, fun_t> map_WSCT_FuncRequest_ = boost::assign::map_list_of
+    typedef boost::function<std::string(const WebServerCommands&)> fun_wsc_t;
+    const std::map<WebServerConnectionType, fun_wsc_t> map_WSC_FuncRequest_ = boost::assign::map_list_of
             ( WebServerConnectionType::BOOST_ASIO_ASYNCHRONOUS, boost::bind(&VLP16_WebServer::request_webserver_asio_asynch,    this, _1))
             ( WebServerConnectionType::BOOST_ASIO_SYNCHRONOUS,  boost::bind(&VLP16_WebServer::request_webserver_asio_synch,     this, _1))
             ( WebServerConnectionType::CURL,                    boost::bind(&VLP16_WebServer::request_webserver_curl,           this, _1))
+            ;
+
+    typedef boost::function<int(const VLP16_settingsConfig&)> fun_st_t;
+    const std::map<WebServerConnectionType, fun_st_t> map_ST_FuncRequest_ = boost::assign::map_list_of
+            ( WebServerConnectionType::BOOST_ASIO_ASYNCHRONOUS, boost::bind(&VLP16_WebServer::send_settings_to_webserver_asio_asynch,   this, _1))
+            ( WebServerConnectionType::CURL,                    boost::bind(&VLP16_WebServer::send_settings_to_webserver_curl,          this, _1))
             ;
 };
 

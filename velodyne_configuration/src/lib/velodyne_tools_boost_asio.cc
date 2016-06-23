@@ -115,7 +115,9 @@ int client_synch::handle_request(const std::string& server, const std::string& p
 }
 
 client_asynch::client_asynch(boost::asio::io_service& io_service,
-                             const std::string& server, const std::string& path)
+                             const std::string& server,
+                             const std::string& path
+                             )
     : resolver_(io_service), socket_(io_service)
 {
     // Form the request. We specify the "Connection: close" header so that the
@@ -124,8 +126,41 @@ client_asynch::client_asynch(boost::asio::io_service& io_service,
     std::ostream request_stream(&request_);
     request_stream << "GET " << path << " HTTP/1.0\r\n";
     request_stream << "Host: " << server << "\r\n";
+    request_stream << "User-Agent: C/1.0";
     request_stream << "Accept: */*\r\n";
     request_stream << "Connection: close\r\n\r\n";
+
+    // Start an asynchronous resolve to translate the server and service names
+    // into a list of endpoints.
+    tcp::resolver::query query(server, "http");
+    resolver_.async_resolve(query,
+                            boost::bind(&client_asynch::handle_resolve, this,
+                                        boost::asio::placeholders::error,
+                                        boost::asio::placeholders::iterator));
+}
+
+client_asynch::client_asynch(boost::asio::io_service& io_service,
+                             const std::string& server,
+                             const std::string& path,
+                             const std::string& xwwwformcoded
+                             )
+    : resolver_(io_service), socket_(io_service)
+{
+    // Form the request. We specify the "Connection: close" header so that the
+    // server will close the socket after transmitting the response. This will
+    // allow us to treat all data up until the EOF as the content.
+    std::ostream request_stream(&request_);
+    request_stream << "POST " << path << " HTTP/1.0\r\n";
+    request_stream << "Host: " << server << "\r\n";
+    request_stream << "User-Agent: C/1.0";
+    request_stream << "Accept: */*\r\n";
+    request_stream << "Referer: rbose\r\n";
+    request_stream << "Content-Length: " <<  xwwwformcoded.length() << "\r\n";
+    request_stream << "Content-Type: application/x-www-form-urlencoded\r\n";
+    request_stream << "Connection: close\r\n\r\n";
+    request_stream << xwwwformcoded;
+
+//    ROS_INFO_STREAM("xwwwformcoded: " << xwwwformcoded);
 
     // Start an asynchronous resolve to translate the server and service names
     // into a list of endpoints.

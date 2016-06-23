@@ -52,8 +52,29 @@ public:
      * @param io_service
      * @param server
      * @param path
+     * @param http_resquet
      */
-    client_asynch(boost::asio::io_service& io_service, const std::string& server, const std::string& path);
+    client_asynch(
+            boost::asio::io_service& io_service,
+            const std::string& server,
+            const std::string& path
+            );
+
+    /**
+     * @brief client_asynch
+     * @param io_service
+     * @param server
+     * @param path
+     * @param xwwwformcoded
+     *
+     * url: http://stackoverflow.com/questions/36141746/boost-asio-http-client-post
+     */
+    client_asynch(
+            boost::asio::io_service& io_service,
+            const std::string& server,
+            const std::string& path,
+            const std::string& xwwwformcoded
+            );
 
     /**
      * @brief get_response

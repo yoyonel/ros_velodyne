@@ -15,7 +15,7 @@ std::string VLP16_WebServer::request_webserver(const WebServerCommands& _cmd,
 {
     try
     {
-        return map_WSCT_FuncRequest_.at(_typeConnection)(_cmd);
+        return map_WSC_FuncRequest_.at(_typeConnection)(_cmd);
     }
     catch (std::exception& e)
     {
@@ -52,7 +52,8 @@ std::string VLP16_WebServer::request_webserver_asio_asynch(const WebServerComman
         velodyne_tools::boost_asio::client_asynch c(
                     io_service,
                     network_sensor_ip_,
-                    std::string("/cgi/") + _cmd._to_string() + ".json");
+                    std::string("/cgi/") + _cmd._to_string() + ".json"
+                    );
         io_service.run();
 
         response_json = c.get_response();
@@ -72,7 +73,8 @@ std::string VLP16_WebServer::request_webserver_asio_synch(const WebServerCommand
         velodyne_tools::boost_asio::client_synch c(
                     io_service,
                     network_sensor_ip_,
-                    std::string("/cgi/") + _cmd._to_string() + ".json");
+                    std::string("/cgi/") + _cmd._to_string() + ".json"
+                    );
         response_json = c.get_response();
     }
     catch (std::exception& e)
@@ -92,7 +94,23 @@ std::string VLP16_WebServer::convert_config_to_xwwwformcoded(const VLP16_setting
     return result;
 }
 
-int VLP16_WebServer::send_settings_to_webserver(const VLP16_settingsConfig& _config) const
+int VLP16_WebServer::send_settings_to_webserver(const VLP16_settingsConfig& _config,
+                                                WebServerConnectionType _typeConnection) const
+{
+    try
+    {
+        return map_ST_FuncRequest_.at(_typeConnection)(_config);
+    }
+    catch (std::exception& e)
+    {
+        ROS_WARN_STREAM("Exception: " << e.what() << "\n");
+
+        ROS_INFO_STREAM("Utilisation de la requete webserver par defaut: request_webserver_asio_asynch");
+        return send_settings_to_webserver_asio_asynch(_config);
+    }
+}
+
+int VLP16_WebServer::send_settings_to_webserver_curl(const VLP16_settingsConfig& _config) const
 {
     const std::string curl_settings = convert_config_to_xwwwformcoded(_config);
 
@@ -131,6 +149,29 @@ int VLP16_WebServer::send_settings_to_webserver(const VLP16_settingsConfig& _con
     const std::string ret_cmd = velodyne_tools::exec_cmd(cmd.c_str());
 
     return 1;
+}
+
+int VLP16_WebServer::send_settings_to_webserver_asio_asynch(const VLP16_settingsConfig& _config) const
+{
+    // url: http://stackoverflow.com/questions/36141746/boost-asio-http-client-post
+    int retour = 1;
+    try {
+        const std::string xwwwformcoded =  convert_config_to_xwwwformcoded(_config);
+        boost::asio::io_service io_service;
+        velodyne_tools::boost_asio::client_asynch c(
+                    io_service,
+                    network_sensor_ip_,
+                    "/cgi/setting",
+                    xwwwformcoded
+                    );
+        io_service.run();
+    }
+    catch (std::exception& e)
+    {
+        std::cout << "Exception: " << e.what() << "\n";
+        retour = 0;
+    }
+    return retour;
 }
 
 bool VLP16_WebServer::get_ip(const ros::NodeHandle &_n, const std::string &_param_name)
