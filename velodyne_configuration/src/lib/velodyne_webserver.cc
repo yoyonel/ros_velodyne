@@ -1,26 +1,7 @@
-#include <ros/ros.h>
-#include <velodyne_tools.h>
-#include <string>
+#include <velodyne_webserver.h>
 
-namespace velodyne_tools
-{
 
-//using namespace velodyne_configuration;
-
-std::string exec_cmd(const char* cmd)
-{
-    FILE* pipe = popen(cmd, "r");
-    if (!pipe) return "ERROR";
-    char buffer[128];
-    std::string result = "";
-    while(!feof(pipe)) {
-        if(fgets(buffer, 128, pipe) != NULL)
-            result += buffer;
-    }
-    pclose(pipe);
-    return result;
-}
-
+namespace velodyne_webserver {
 
 ///**
 // * @brief VLP16_WebServer::request_webserver
@@ -31,8 +12,8 @@ std::string exec_cmd(const char* cmd)
 // */
 //std::string VLP16_WebServer::request_webserver(const WebServerCommands& _cmd) const
 //{
-////    return request_webserver_curl(_cmd);
-////    return request_webserver_asio_synch(_cmd);
+//    //    return request_webserver_curl(_cmd);
+//    //    return request_webserver_asio_synch(_cmd);
 //    return request_webserver_asio_asynch(_cmd);
 //}
 
@@ -52,7 +33,7 @@ std::string exec_cmd(const char* cmd)
 //    //
 //    ROS_INFO_STREAM("Commande bash: " << cmd_bash);
 
-//    return exec_cmd(cmd_bash.c_str());
+//    return velodyne_tools::exec_cmd(cmd_bash.c_str());
 //}
 
 //std::string VLP16_WebServer::request_webserver_asio_asynch(const WebServerCommands& _cmd) const
@@ -105,7 +86,7 @@ std::string exec_cmd(const char* cmd)
 //        request_stream << "Accept: */*\r\n";
 //        request_stream << "Connection: close\r\n\r\n";
 //        //
-////        ROS_INFO_STREAM("Request: " << request_stream);
+//        //        ROS_INFO_STREAM("Request: " << request_stream);
 
 //        // Send the request.
 //        boost::asio::write(socket, request);
@@ -141,19 +122,19 @@ std::string exec_cmd(const char* cmd)
 //        // Process the response headers.
 //        std::string header;
 //        while (std::getline(response_stream, header) && header != "\r")
-////            ROS_INFO_STREAM("header: " << header << "\n");
+//            //            ROS_INFO_STREAM("header: " << header << "\n");
 //            ;
-////        ROS_INFO_STREAM("\n");
+//        //        ROS_INFO_STREAM("\n");
 
 //        // Write whatever content we already have to output.
 //        if (response.size() > 0)
 //        {
-////            ROS_INFO_STREAM("response: " << &response);   // ps: ca consumme les donnees !
+//            //            ROS_INFO_STREAM("response: " << &response);   // ps: ca consumme les donnees !
 //            // urls:
 //            // - http://stackoverflow.com/questions/1899750/how-do-i-convert-a-boostasiostreambuf-into-a-stdstring
 //            // - http://stackoverflow.com/a/2546953
 //            std::istream(&response) >> response_json;
-////            ROS_INFO_STREAM("response_json: " << response_json);
+//            //            ROS_INFO_STREAM("response_json: " << response_json);
 //        }
 
 //        // Read until EOF, writing data to output as we go.
@@ -229,7 +210,7 @@ std::string exec_cmd(const char* cmd)
 //    //
 //    ROS_INFO_STREAM("Commande bash: " << cmd);
 
-//    const std::string ret_cmd = exec_cmd(cmd.c_str());
+//    const std::string ret_cmd = velodyne_tools::exec_cmd(cmd.c_str());
 
 //    return 1;
 //}
@@ -515,7 +496,8 @@ std::string exec_cmd(const char* cmd)
 //bool Velodyne_WebServer_Status::get_response(velodyne_configuration::VLP16_StatusServiceResponse &_res)
 //{
 //    //    const std::string res_request = /**webserver_.**/request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::status);
-//    const std::string res_request = request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::status);
+////    const std::string res_request = request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::status);
+//    const std::string res_request = request_webserver(velodyne_webserver::Velodyne_WebServer::WebServerCommands::status);
 //    ROS_INFO_STREAM("response from VLP webserver: " << res_request );
 
 //    return /**webserver_.**/parse_JSON_for_status(res_request, _res);
@@ -537,7 +519,8 @@ std::string exec_cmd(const char* cmd)
 
 //bool Velodyne_WebServer_Settings::get_response(velodyne_configuration::VLP16_SettingsServiceResponse &_res)
 //{
-//    const std::string res_request = /**webserver_.**/request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::settings);
+////    const std::string res_request = /**webserver_.**/request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::settings);
+//    const std::string res_request = request_webserver(velodyne_webserver::Velodyne_WebServer::WebServerCommands::settings);
 //    ROS_INFO_STREAM("response from VLP webserver: " << res_request );
 
 //    return /**webserver_.**/parse_JSON_for_settings(res_request, _res);
@@ -551,12 +534,14 @@ std::string exec_cmd(const char* cmd)
 
 //void Velodyne_WebServer_Diagnostics::run()
 //{
+////    Velodyne_WebServer_Services<VLP16_DiagnosticsService, VLP16_DiagnosticsMessage>::run_with_test_sub();
 //    Velodyne_WebServer_Services<VLP16_DiagnosticsService, VLP16_DiagnosticsMessage>::run_with_test_sub();
 //}
 
 //bool Velodyne_WebServer_Diagnostics::get_diagnostics_raw(velodyne_configuration::VLP16_DiagnosticsRawServiceResponse& _res)
 //{
-//    const std::string res_request = /**webserver_.**/request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::diag);
+////    const std::string res_request = /**webserver_.**/request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::diag);
+//    const std::string res_request = /**webserver_.**/request_webserver(velodyne_webserver::Velodyne_WebServer::WebServerCommands::diag);
 //    ROS_INFO_STREAM("response from VLP webserver: " << res_request );
 //    return /**webserver_.**/parse_JSON_for_diagnostics_raw(res_request, _res);
 //}
@@ -569,5 +554,4 @@ std::string exec_cmd(const char* cmd)
 //}
 ////---------------------------------------------------------------------------
 
-
-} // namespace velodyne_settings
+}

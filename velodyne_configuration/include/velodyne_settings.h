@@ -6,7 +6,7 @@
 #include "velodyne_configuration/VLP16_settingsConfig.h"
 #include "velodyne_configuration/VLP16_SettingsService.h"
 //
-#include <velodyne_tools.h>
+#include <vlp16_webserver_services.h>
 //
 #include <boost/thread.hpp>
 
@@ -14,7 +14,8 @@
 /**
  * @brief The CVelodyneSettings class
  */
-class CVelodyneSettings : public velodyne_tools::Velodyne_WebServer_Settings
+class CVelodyneSettings :
+        public vlp16_webserver_services::Velodyne_WebServer_Settings
 {
 public:
     CVelodyneSettings();
@@ -25,12 +26,17 @@ protected:
      * @param config
      * @param level
      */
-    void dyn_reconf_server_cb(velodyne_configuration::VLP16_settingsConfig &config, uint32_t level);
+    void dyn_reconf_server_cb(
+            velodyne_configuration::VLP16_settingsConfig &config,
+            uint32_t level
+            );
     /**
      * @brief velodyne_settings_cb
      * @param _msg
      */
-    void velodyne_settings_cb(velodyne_configuration::VLP16_SettingsMessage _msg);
+    void velodyne_settings_cb(
+            velodyne_configuration::VLP16_SettingsMessage _msg
+            );
 
     /**
      * @brief synch_Laser_ROS
@@ -42,7 +48,9 @@ protected:
      * @param _msg
      * @return
      */
-    bool synch_Laser_ROS(const velodyne_configuration::VLP16_SettingsMessage& _msg);
+    bool synch_Laser_ROS(
+            const velodyne_configuration::VLP16_SettingsMessage& _msg
+            );
 
     //--------------------
     // INLINES
@@ -51,8 +59,7 @@ protected:
      * @brief update_config
      * @param _msg
      */
-    inline void update_config(const velodyne_configuration::VLP16_SettingsMessage& _msg)
-    {
+    inline void update_config(const velodyne_configuration::VLP16_SettingsMessage& _msg) {
         config_.laser_state = _msg.laser_state;
         config_.rpm = _msg.rpm;
         config_.return_type = atoi(_msg.returns.c_str());
@@ -63,8 +70,7 @@ protected:
      * @param _msg
      * @return
      */
-    inline bool state_has_changed(const velodyne_configuration::VLP16_SettingsMessage& _msg) const
-    {
+    inline bool state_has_changed(const velodyne_configuration::VLP16_SettingsMessage& _msg) const {
         return
                 config_.laser_state != _msg.laser_state ||
                 config_.rpm != _msg.rpm ||

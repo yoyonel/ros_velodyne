@@ -53,6 +53,7 @@ add_subdirectory(src/lib)
 ##############################
 ## Velodyne settings server ##
 ##############################
+add_std_cxx11_flag("src/settings/settings_server.cc")
 add_executable(velodyne_settings_server
     src/settings/settings_server.cc)
 target_link_libraries(velodyne_settings_server
@@ -92,6 +93,7 @@ install(TARGETS velodyne_status_server
 ###################################
 ## Velodyne diagnostics server   ##
 ###################################
+add_std_cxx11_flag("src/diagnostics/diagnostics_server.cc")
 add_executable(velodyne_diagnostics_server
     src/diagnostics/diagnostics_server.cc)
 target_link_libraries(velodyne_diagnostics_server

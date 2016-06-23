@@ -6,7 +6,7 @@
 //CVelodyneDiagnostics::CVelodyneDiagnostics() :
 //    nh_("~"), loop_rate_value_(1)
 //{
-//    webserver_.get_ip(nh_);
+//    /**webserver_.**/get_ip(nh_);
 
 //    //----------------------------------------------------
 //    // Services
@@ -48,16 +48,16 @@
 
 //bool CVelodyneDiagnostics::get_diagnostics_raw(velodyne_configuration::VLP16_DiagnosticsRawServiceResponse &res)
 //{
-//    const std::string res_request = webserver_.request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::diag);
+//    const std::string res_request = /**webserver_.**/request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::diag);
 //    ROS_INFO_STREAM("response from VLP webserver: " << res_request );
-//    return webserver_.parse_JSON_for_diagnostics_raw(res_request, res);
+//    return /**webserver_.**/parse_JSON_for_diagnostics_raw(res_request, res);
 //}
 
 //bool CVelodyneDiagnostics::get_diagnostics(velodyne_configuration::VLP16_DiagnosticsServiceResponse &res)
 //{
 //    velodyne_configuration::VLP16_DiagnosticsRawServiceResponse res_raw;
 //    get_diagnostics_raw(res_raw);
-//    return webserver_.scale_volt_temp(res_raw.msg, res.msg);
+//    return /**webserver_.**/scale_volt_temp(res_raw.msg, res.msg);
 //}
 
 ////---------------------------------------------------------------------------
@@ -72,15 +72,15 @@
 
 //bool Velodyne_WebServer_Diagnostics::get_diagnostics_raw(velodyne_configuration::VLP16_DiagnosticsRawServiceResponse& _res)
 //{
-//    const std::string res_request = webserver_.request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::diag);
+//    const std::string res_request = /**webserver_.**/request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::diag);
 //    ROS_INFO_STREAM("response from VLP webserver: " << res_request );
-//    return webserver_.parse_JSON_for_diagnostics_raw(res_request, _res);
+//    return /**webserver_.**/parse_JSON_for_diagnostics_raw(res_request, _res);
 //}
 
 //bool Velodyne_WebServer_Diagnostics::get_response(velodyne_configuration::VLP16_DiagnosticsServiceResponse& _res)
 //{
 //    velodyne_configuration::VLP16_DiagnosticsRawServiceResponse res_raw;
 //    get_diagnostics_raw(res_raw);
-//    return webserver_.scale_volt_temp(res_raw.msg, _res.msg);
+//    return /**webserver_.**/scale_volt_temp(res_raw.msg, _res.msg);
 //}
 ////---------------------------------------------------------------------------

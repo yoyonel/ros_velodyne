@@ -2,7 +2,9 @@
 
 using namespace velodyne_configuration;
 
-CVelodyneSettings::CVelodyneSettings() : velodyne_tools::Velodyne_WebServer_Settings() {
+CVelodyneSettings::CVelodyneSettings() :
+    vlp16_webserver_services::Velodyne_WebServer_Settings()
+{
     //----------------------------------------------------
     // Dynamic Parameter server
     //----------------------------------------------------
@@ -29,7 +31,8 @@ CVelodyneSettings::CVelodyneSettings() : velodyne_tools::Velodyne_WebServer_Sett
 
 void CVelodyneSettings::dyn_reconf_server_cb(VLP16_settingsConfig &config, uint32_t level)
 {
-    const int return_set_configs = webserver_.send_settings_to_webserver(config);
+//    const int return_set_configs = /**webserver_.**/send_settings_to_webserver(config);
+    const int return_set_configs = send_settings_to_webserver(config);
     ROS_INFO("Reconfigure Request: %d", return_set_configs);
 }
 

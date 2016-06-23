@@ -7,7 +7,7 @@
 CVelodyneStatus::CVelodyneStatus() :
     nh_("~")
 {
-    webserver_.get_ip(nh_);
+    /**webserver_.**/get_ip(nh_);
 
     //----------------------------------------------------
     // Services
@@ -47,8 +47,8 @@ void CVelodyneStatus::run() {
 
 bool CVelodyneStatus::get_status(velodyne_configuration::VLP16_StatusServiceResponse &res)
 {
-    const std::string res_request = webserver_.request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::status);
+    const std::string res_request = /**webserver_.**/request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::status);
     ROS_INFO_STREAM("response from VLP webserver: " << res_request );
 
-    return webserver_.parse_JSON_for_status(res_request, res);
+    return /**webserver_.**/parse_JSON_for_status(res_request, res);
 }
