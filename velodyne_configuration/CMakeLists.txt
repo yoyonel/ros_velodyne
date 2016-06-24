@@ -58,7 +58,7 @@ add_executable(velodyne_settings_server
     src/settings/settings_server.cc)
 target_link_libraries(velodyne_settings_server
     velodyne_tools
-    velodyne_settings
+    vlp16_settings
     ${catkin_LIBRARIES})
 add_dependencies(velodyne_settings_server ${catkin_EXPORTED_TARGETS})
 

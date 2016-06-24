@@ -1,8 +1,8 @@
-#include <velodyne_settings.h>
+#include <vlp16_settings.h>
 
 using namespace velodyne_configuration;
 
-CVelodyneSettings::CVelodyneSettings() :
+VLP16_Settings::VLP16_Settings() :
     vlp16_webserver_services::Velodyne_WebServer_Settings()
 {
     //----------------------------------------------------
@@ -12,7 +12,7 @@ CVelodyneSettings::CVelodyneSettings() :
     // - http://answers.ros.org/question/57498/notify-changes-to-dynamic_reconfigure/
     // - http://www.boost.org/doc/libs/1_61_0/libs/thread/example/recursive_mutex.cpp
     dyn_reconf_server_ = new dynamic_reconfigure::Server<VLP16_settingsConfig>(dynamic_reconfigure_mutex_);
-    dyn_reconf_server_->setCallback(boost::bind(&CVelodyneSettings::dyn_reconf_server_cb, this, _1, _2));
+    dyn_reconf_server_->setCallback(boost::bind(&VLP16_Settings::dyn_reconf_server_cb, this, _1, _2));
     dyn_reconf_server_->getConfigDefault(config_);
     //
     ROS_INFO("Ready to set velodyne settings.\t[DYNAMIC_RECONF]");
@@ -22,27 +22,27 @@ CVelodyneSettings::CVelodyneSettings() :
     // Subscriber
     //----------------------------------------------------
     velodyne_settings_sub_ = nh_.subscribe(get_topic_name_pub(), 10,
-                                           &CVelodyneSettings::velodyne_settings_cb,
-                                           (CVelodyneSettings *) this
+                                           &VLP16_Settings::velodyne_settings_cb,
+                                           (VLP16_Settings *) this
                                            );
     ROS_INFO("Subscribe to velodyne settings messages.\t[SUBSCRIBER]");
     //----------------------------------------------------
 }
 
-void CVelodyneSettings::dyn_reconf_server_cb(VLP16_settingsConfig &config, uint32_t level)
+void VLP16_Settings::dyn_reconf_server_cb(VLP16_settingsConfig &config, uint32_t level)
 {
 //    const int return_set_configs = /**webserver_.**/send_settings_to_webserver(config);
     const int return_set_configs = send_settings_to_webserver(config);
     ROS_INFO("Reconfigure Request: %d", return_set_configs);
 }
 
-void CVelodyneSettings::velodyne_settings_cb(VLP16_SettingsMessage _msg)
+void VLP16_Settings::velodyne_settings_cb(VLP16_SettingsMessage _msg)
 {
     ROS_INFO("velodyne_settings_cb");
     synch_Laser_ROS(_msg);
 }
 
-bool CVelodyneSettings::synch_Laser_ROS(const VLP16_SettingsMessage& _msg)
+bool VLP16_Settings::synch_Laser_ROS(const VLP16_SettingsMessage& _msg)
 {
     bool ret = true;
 
@@ -68,7 +68,7 @@ bool CVelodyneSettings::synch_Laser_ROS(const VLP16_SettingsMessage& _msg)
     return ret;
 }
 
-bool CVelodyneSettings::synch_Laser_ROS()
+bool VLP16_Settings::synch_Laser_ROS()
 {
     VLP16_SettingsServiceResponse laser_settings;
     // On effectue une requete au webserver pour récupérer l'état du laser

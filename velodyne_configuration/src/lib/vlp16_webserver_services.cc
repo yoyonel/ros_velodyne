@@ -9,7 +9,6 @@ Velodyne_WebServer_Services<Service, Message>::Velodyne_WebServer_Services(
         const double& _loop_rate_value
         ) : nh_(_nh), loop_rate_value_(_loop_rate_value)
 {
-    //    /**webserver_.**/get_ip(nh_);
     get_ip(nh_);
 
     //----------------------------------------------------
@@ -102,11 +101,10 @@ Velodyne_WebServer_Settings::Velodyne_WebServer_Settings(const std::string& _nam
 
 bool Velodyne_WebServer_Settings::get_response(velodyne_configuration::VLP16_SettingsServiceResponse &_res)
 {
-//    const std::string res_request = /**webserver_.**/request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::settings);
     const std::string res_request = request_webserver(velodyne_webserver::Velodyne_WebServer::WebServerCommands::settings);
     ROS_INFO_STREAM("response from VLP webserver: " << res_request );
 
-    return /**webserver_.**/parse_JSON_for_settings(res_request, _res);
+    return parse_JSON_for_settings(res_request, _res);
 }
 //---------------------------------------------------------------------------
 
@@ -117,23 +115,21 @@ Velodyne_WebServer_Diagnostics::Velodyne_WebServer_Diagnostics(const std::string
 
 void Velodyne_WebServer_Diagnostics::run()
 {
-//    Velodyne_WebServer_Services<VLP16_DiagnosticsService, VLP16_DiagnosticsMessage>::run_with_test_sub();
     Velodyne_WebServer_Services<VLP16_DiagnosticsService, VLP16_DiagnosticsMessage>::run_with_test_sub();
 }
 
 bool Velodyne_WebServer_Diagnostics::get_diagnostics_raw(velodyne_configuration::VLP16_DiagnosticsRawServiceResponse& _res)
 {
-//    const std::string res_request = /**webserver_.**/request_webserver(velodyne_tools::Velodyne_WebServer::WebServerCommands::diag);
-    const std::string res_request = /**webserver_.**/request_webserver(velodyne_webserver::Velodyne_WebServer::WebServerCommands::diag);
+    const std::string res_request = request_webserver(velodyne_webserver::Velodyne_WebServer::WebServerCommands::diag);
     ROS_INFO_STREAM("response from VLP webserver: " << res_request );
-    return /**webserver_.**/parse_JSON_for_diagnostics_raw(res_request, _res);
+    return parse_JSON_for_diagnostics_raw(res_request, _res);
 }
 
 bool Velodyne_WebServer_Diagnostics::get_response(velodyne_configuration::VLP16_DiagnosticsServiceResponse& _res)
 {
     velodyne_configuration::VLP16_DiagnosticsRawServiceResponse res_raw;
     get_diagnostics_raw(res_raw);
-    return /**webserver_.**/scale_volt_temp(res_raw.msg, _res.msg);
+    return scale_volt_temp(res_raw.msg, _res.msg);
 }
 //---------------------------------------------------------------------------
 }

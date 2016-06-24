@@ -14,11 +14,11 @@
 /**
  * @brief The CVelodyneSettings class
  */
-class CVelodyneSettings :
+class VLP16_Settings :
         public vlp16_webserver_services::Velodyne_WebServer_Settings
 {
 public:
-    CVelodyneSettings();
+    VLP16_Settings();
 
 protected:
     /**

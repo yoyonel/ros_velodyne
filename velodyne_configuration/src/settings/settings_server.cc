@@ -1,13 +1,13 @@
 #include <ros/ros.h>
 //
-#include <velodyne_settings.h>
+#include <vlp16_settings.h>
 
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "velodyne_settings_server");
 
-    CVelodyneSettings vs;   // instanciation de l'object (à faire) APRES ros::init !
+    VLP16_Settings vs;   // instanciation de l'object (à faire) APRES ros::init !
 
 //    vs.set_loop_rate_value_(0.5);   // 0.5Hz    [OK]
     vs.set_loop_rate_value_(10);    // 10Hz     [OK]

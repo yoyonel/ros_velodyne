@@ -12,18 +12,18 @@
 #include <ros/ros.h>
 #include <ros/service.h>
 
-#include "velodyne_configuration/VLP16_SettingsService.h"
-#include "velodyne_configuration/VLP16_StatusService.h"
-#include "velodyne_configuration/VLP16_DiagnosticsService.h"
-#include "velodyne_configuration/VLP16_DiagnosticsRawService.h"
-#include "velodyne_configuration/VLP16_settingsConfig.h"
+//#include "velodyne_configuration/VLP16_SettingsService.h"
+//#include "velodyne_configuration/VLP16_StatusService.h"
+//#include "velodyne_configuration/VLP16_DiagnosticsService.h"
+//#include "velodyne_configuration/VLP16_DiagnosticsRawService.h"
+//#include "velodyne_configuration/VLP16_settingsConfig.h"
 
 
 namespace pt = boost::property_tree;
 
 namespace velodyne_webserver {
 
-using namespace velodyne_configuration;
+//using namespace velodyne_configuration;
 
 //// -------------------------------------------
 //// url: http://stackoverflow.com/a/13188585
@@ -75,9 +75,6 @@ protected:
             WebServerConnectionType _typeConnection
             ) const = 0;
     // -------------------------------------------
-
-    std::string exec_cmd(const char* cmd) const;
-
 
 protected:
     std::string network_sensor_ip_;
