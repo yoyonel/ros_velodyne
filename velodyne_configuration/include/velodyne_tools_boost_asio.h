@@ -11,6 +11,26 @@ namespace boost_asio {
 
 using boost::asio::ip::tcp;
 
+// Form the request. We specify the "Connection: close" header so that the
+// server will close the socket after transmitting the response. This will
+// allow us to treat all data up until the EOF as the content.
+#define BUILD_REQUEST_GET(request_stream, server, path)     \
+    request_stream << "GET " << path << " HTTP/1.0\r\n";   \
+    request_stream << "Host: " << server << "\r\n";        \
+    request_stream << "Accept: */*\r\n";                   \
+    request_stream << "Connection: close\r\n\r\n";
+
+#define BUILD_REQUEST_POST(request_stream, server, path, xwwwformcoded)         \
+    request_stream << "POST " << path << " HTTP/1.0\r\n";                       \
+    request_stream << "Host: " << server << "\r\n";                             \
+    request_stream << "User-Agent: C/1.0";                                      \
+    request_stream << "Accept: */*\r\n";                                        \
+    request_stream << "Referer: rbose\r\n";                                     \
+    request_stream << "Content-Length: " <<  xwwwformcoded.length() << "\r\n";  \
+    request_stream << "Content-Type: application/x-www-form-urlencoded\r\n";    \
+    request_stream << "Connection: close\r\n\r\n";                              \
+    request_stream << xwwwformcoded;
+
 class client_synch
 {
 public:
@@ -20,7 +40,25 @@ public:
      * @param server
      * @param path
      */
-    client_synch(boost::asio::io_service& io_service, const std::string& server, const std::string& path);
+    client_synch(
+            boost::asio::io_service& io_service,
+            const std::string& server,
+            const std::string& path
+            );
+
+    /**
+     * @brief client_synch
+     * @param io_service
+     * @param server
+     * @param path
+     * @param xwwwformcoded
+     */
+    client_synch(
+            boost::asio::io_service& io_service,
+            const std::string& server,
+            const std::string& path,
+            const std::string& xwwwformcoded
+            );
 
     /**
      * @brief get_response
@@ -35,12 +73,18 @@ protected:
      * @param path
      * @return
      */
-    int handle_request(const std::string& server, const std::string& path);
+    int handle_request_for_GET(const std::string& server, const std::string& path);
+
+    int handle_request_for_POST(const std::string& server, const std::string& path, const std::string& xwwwformcoded);
+
+    int perform_request(const std::string& _server);
 
 private:
     std::string str_response_;
     tcp::resolver resolver_;
     tcp::socket socket_;
+    boost::asio::streambuf request_;
+    std::ostream request_stream_;
 };
 
 // url: http://www.boost.org/doc/libs/1_49_0/doc/html/boost_asio/example/http/client/async_client.cpp

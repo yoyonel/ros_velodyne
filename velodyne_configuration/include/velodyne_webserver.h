@@ -18,15 +18,12 @@
 #include "velodyne_configuration/VLP16_DiagnosticsRawService.h"
 #include "velodyne_configuration/VLP16_settingsConfig.h"
 
-//#include <vlp16_webserver.h>
-
 
 namespace pt = boost::property_tree;
 
 namespace velodyne_webserver {
 
 using namespace velodyne_configuration;
-//using namespace vlp16_webserver;
 
 //// -------------------------------------------
 //// url: http://stackoverflow.com/a/13188585

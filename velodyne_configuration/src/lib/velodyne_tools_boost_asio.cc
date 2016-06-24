@@ -5,14 +5,17 @@ namespace boost_asio {
 
 client_synch::client_synch(
         boost::asio::io_service& io_service,
-        const std::string& server, const std::string& path)
+        const std::string& server,
+        const std::string& path
+        )
     : resolver_(io_service),
-      socket_(io_service)
+      socket_(io_service),
+      request_stream_(&request_)
 {
     str_response_ = "";
     try
     {
-        handle_request(server, path);
+        handle_request_for_GET(server, path);
     }
     catch (std::exception& e)
     {
@@ -20,32 +23,40 @@ client_synch::client_synch(
     }
 }
 
-int client_synch::handle_request(const std::string& server, const std::string& path)
+client_synch::client_synch(
+        boost::asio::io_service& io_service,
+        const std::string& server,
+        const std::string& path,
+        const std::string& xwwwformcoded
+        )
+    : resolver_(io_service),
+      socket_(io_service),
+      request_stream_(&request_)
+{
+    try
+    {
+        handle_request_for_POST(server, path, xwwwformcoded);
+    }
+    catch (std::exception& e)
+    {
+        ROS_WARN_STREAM("Exception: " << e.what() << "\n");
+    }
+}
+
+int client_synch::perform_request(const std::string& _server)
 {
     int retour = 1;
 
     try {
         // Get a list of endpoints corresponding to the server name.
-        tcp::resolver::query query(server, "http");
+        tcp::resolver::query query(_server, "http");
         tcp::resolver::iterator endpoint_iterator = resolver_.resolve(query);
 
         // Try each endpoint until we successfully establish a connection.
         boost::asio::connect(socket_, endpoint_iterator);
 
-        // Form the request. We specify the "Connection: close" header so that the
-        // server will close the socket after transmitting the response. This will
-        // allow us to treat all data up until the EOF as the content.
-        boost::asio::streambuf request;
-        std::ostream request_stream(&request);
-        request_stream << "GET " << path << " HTTP/1.0\r\n";
-        request_stream << "Host: " << server << "\r\n";
-        request_stream << "Accept: */*\r\n";
-        request_stream << "Connection: close\r\n\r\n";
-        //
-        //        ROS_INFO_STREAM("Request: " << request_stream);
-
         // Send the request.
-        boost::asio::write(socket_, request);
+        boost::asio::write(socket_, request_);
 
         // Read the response status line. The response streambuf will automatically
         // grow to accommodate the entire line. The growth may be limited by passing
@@ -114,21 +125,30 @@ int client_synch::handle_request(const std::string& server, const std::string& p
     return retour;
 }
 
+int client_synch::handle_request_for_GET(const std::string& server, const std::string& path)
+{
+    BUILD_REQUEST_GET(request_stream_, server, path);
+    //        ROS_INFO_STREAM("Request: " << request_stream);
+
+    return perform_request(server);
+}
+
+int client_synch::handle_request_for_POST(const std::string& server, const std::string& path, const std::string& xwwwformcoded)
+{
+    BUILD_REQUEST_POST(request_stream_, server, path, xwwwformcoded);
+    ROS_INFO_STREAM("Request: " << request_stream_);
+
+    return perform_request(server);
+}
+
 client_asynch::client_asynch(boost::asio::io_service& io_service,
                              const std::string& server,
                              const std::string& path
                              )
     : resolver_(io_service), socket_(io_service)
 {
-    // Form the request. We specify the "Connection: close" header so that the
-    // server will close the socket after transmitting the response. This will
-    // allow us to treat all data up until the EOF as the content.
     std::ostream request_stream(&request_);
-    request_stream << "GET " << path << " HTTP/1.0\r\n";
-    request_stream << "Host: " << server << "\r\n";
-    request_stream << "User-Agent: C/1.0";
-    request_stream << "Accept: */*\r\n";
-    request_stream << "Connection: close\r\n\r\n";
+    BUILD_REQUEST_GET(request_stream, server, path);
 
     // Start an asynchronous resolve to translate the server and service names
     // into a list of endpoints.
@@ -146,21 +166,10 @@ client_asynch::client_asynch(boost::asio::io_service& io_service,
                              )
     : resolver_(io_service), socket_(io_service)
 {
-    // Form the request. We specify the "Connection: close" header so that the
-    // server will close the socket after transmitting the response. This will
-    // allow us to treat all data up until the EOF as the content.
-    std::ostream request_stream(&request_);
-    request_stream << "POST " << path << " HTTP/1.0\r\n";
-    request_stream << "Host: " << server << "\r\n";
-    request_stream << "User-Agent: C/1.0";
-    request_stream << "Accept: */*\r\n";
-    request_stream << "Referer: rbose\r\n";
-    request_stream << "Content-Length: " <<  xwwwformcoded.length() << "\r\n";
-    request_stream << "Content-Type: application/x-www-form-urlencoded\r\n";
-    request_stream << "Connection: close\r\n\r\n";
-    request_stream << xwwwformcoded;
+    //    ROS_INFO_STREAM("xwwwformcoded: " << xwwwformcoded);
 
-//    ROS_INFO_STREAM("xwwwformcoded: " << xwwwformcoded);
+    std::ostream request_stream(&request_);
+    BUILD_REQUEST_POST(request_stream, server, path, xwwwformcoded);
 
     // Start an asynchronous resolve to translate the server and service names
     // into a list of endpoints.
