@@ -22,6 +22,8 @@
 
 #include <velodyne_driver/input.h>
 
+#include <boost/thread/mutex.hpp>
+
 namespace velodyne_driver
 {
 
@@ -34,6 +36,8 @@ public:
   ~VelodyneDriver() {}
 
   bool poll(void);
+
+  bool update_rpm(const double& _rpm);
 
 private:
 
@@ -59,6 +63,12 @@ private:
   // -------------------------------------------------------------------------------
 //  ros::Publisher output_status_;
   // -------------------------------------------------------------------------------
+
+  double packet_rate_;                   // packet frequency (Hz)
+  std::string deviceName_;
+  ros::NodeHandle private_nh_;
+
+//  boost::mutex lock_;
 };
 
 } // namespace velodyne_driver
