@@ -26,4 +26,7 @@
     <arg name="max_range" value="$(arg max_range)"/>
   </include>
 
+  <!-- start status server -->
+  <include file="$(find velodyne_configuration)/server_status.launch">
+  </include>
 </launch>
