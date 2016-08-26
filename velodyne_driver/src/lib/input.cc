@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (C) 2007 Austin Robot Technology, Patrick Beeson
  *  Copyright (C) 2009, 2010 Austin Robot Technology, Jack O'Quin
  *
@@ -228,7 +228,7 @@ namespace velodyne_driver
     ROS_INFO("Opening PCAP file \"%s\"", filename_.c_str());
     if ((pcap_ = pcap_open_offline(filename_.c_str(), errbuf_) ) == NULL)
       {
-        ROS_FATAL("Error opening Velodyne socket dump file.");
+        ROS_FATAL_STREAM("Error opening Velodyne socket dump file. => " << errbuf_);
         return;
       }
   }
