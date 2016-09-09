@@ -48,6 +48,9 @@ private:
     std::string model;               ///< device model name
     int    npackets;                 ///< number of packets to collect
     double rpm;                      ///< device rotation rate (RPMs)
+    //
+    double rpm_max, rpm_min;
+    double rpm_range;
   } config_;
 
   boost::shared_ptr<Input> input_;
