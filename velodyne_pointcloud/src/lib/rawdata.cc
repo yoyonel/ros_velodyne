@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (C) 2007 Austin Robot Technology, Patrick Beeson
  *  Copyright (C) 2009, 2010, 2012 Austin Robot Technology, Jack O'Quin
  *
@@ -33,6 +33,8 @@
 #include <angles/angles.h>
 
 #include <velodyne_pointcloud/rawdata.h>
+
+#include <stdint.h>
 
 namespace velodyne_rawdata
 {
@@ -291,7 +293,13 @@ namespace velodyne_rawdata
     float x, y, z;
     float intensity;
 
-    const raw_packet_t *raw = (const raw_packet_t *) &pkt.data[0];
+    /**
+    const uint8_t& arr_raw_timestamp[4] = pkt.data[1242]; // 1242 = 0x04da
+    const uint8_t arr_timestamp[4] = {arr_raw_timestamp[3], arr_raw_timestamp[2], arr_raw_timestamp[1], arr_raw_timestamp[0]};
+    const uint32_t timestamp = (const uint32_t) arr_timestamp[0];
+    /**/
+
+    const raw_packet_t *raw = (const raw_packet_t *) &pkt.data[0];    
 
     for (int block = 0; block < BLOCKS_PER_PACKET; block++) {
 
