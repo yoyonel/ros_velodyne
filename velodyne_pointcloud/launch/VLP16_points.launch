@@ -27,6 +27,6 @@
   </include>
 
   <!-- start status server -->
-  <include file="$(find velodyne_configuration)/server_status.launch">
+  <include file="$(find velodyne_configuration)/launch/server_status.launch">
   </include>
 </launch>
