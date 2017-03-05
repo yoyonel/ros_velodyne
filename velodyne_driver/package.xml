@@ -26,6 +26,8 @@
   <build_depend>roscpp</build_depend>
   <build_depend>tf</build_depend>
   <build_depend>velodyne_msgs</build_depend>
+  <!-- to use status of VLP16 -->
+  <build_depend>velodyne_configuration</build_depend>
 
   <!-- these build dependencies are only needed for unit testing -->
   <build_depend>roslaunch</build_depend>
@@ -38,6 +40,8 @@
   <run_depend>roscpp</run_depend>
   <run_depend>tf</run_depend>
   <run_depend>velodyne_msgs</run_depend>
+  <!-- to use status of VLP16 -->
+  <run_depend>velodyne_configuration</run_depend>
 
   <export>
     <nodelet plugin="${prefix}/nodelet_velodyne.xml"/>

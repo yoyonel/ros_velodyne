@@ -20,7 +20,8 @@
 
 #include "driver.h"
 
-#include "velodyne_configuration/VLP16_StatusMessage.h" // Utile pour: velodyne_configuration::VLP16_StatusMessage
+//#include "velodyne_configuration/VLP16_StatusMessage.h" // Utile pour: velodyne_configuration::VLP16_StatusMessage
+#include <velodyne_configuration/VLP16_StatusMessage.h>
 
 namespace velodyne_driver
 {
