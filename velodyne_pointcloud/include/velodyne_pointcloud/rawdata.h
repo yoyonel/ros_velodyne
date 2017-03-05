@@ -168,6 +168,10 @@ namespace velodyne_rawdata
     /** add private function to handle the VLP16 **/ 
     void unpack_vlp16(const velodyne_msgs::VelodynePacket &pkt, VPointCloud &pc);
 
+    /** **/
+    inline uint32_t unpack_vlp16_timestamp(const velodyne_msgs::VelodynePacket &pkt);
+    inline const uint32_t compute_timeoffset(const uint8_t &_block, const uint8_t &_firing, const uint8_t &_dsr);
+
     /** in-line test whether a point is in range */
     bool pointInRange(float range)
     {
